@@ -8,7 +8,8 @@ GUESS_MAX = 6
 alphabets = string.ascii_uppercase
 WORDLE = [['-'] * WORDLE_SIZE for i in range(GUESS_MAX)]
 TARGET_WORD = "BLANK"
-WORD_LIST = []
+VALID_WORD_LIST = []
+MOST_USED_WORD_LIST = []
 
 # Class to define text colors
 class color:
@@ -83,12 +84,12 @@ def wordle_display():
 # Function to initialize the wordle
 def wordle_init():
     global TARGET_WORD
-    TARGET_WORD= random.choice(WORD_LIST)
+    TARGET_WORD= random.choice(MOST_USED_WORD_LIST)
     return
 
 # Function to initialize the list of words from a text file
 def list_of_words_init():
-    global WORD_LIST
+    global VALID_WORD_LIST
     global alphabets
     # Open the text file containing English words
     f = open("words_alpha.txt", "r")
@@ -104,19 +105,36 @@ def list_of_words_init():
                     flag = 1
                     break
             if flag == 0:
-                WORD_LIST.append(word)
+                VALID_WORD_LIST.append(word)
+    f.close()
+
+    # Open the text file containing English words
+    f = open("google-10000-english-no-swears.txt", "r")
+    for word in f.readlines():
+        # Select only words of the desired length
+        if len(word) == 6:
+            word = word.replace("\n", "")
+            word = word.upper()
+            flag = 0
+            # Check if all characters in the word are alphabets
+            for i in range(5):
+                if word[i] not in alphabets:
+                    flag = 1
+                    break
+            if flag == 0:
+                MOST_USED_WORD_LIST.append(word)
     f.close()
     return
 
 # Function to validate user input
 def validate_input(guess_word):
     global WORDLE_SIZE
-    global WORD_LIST
+    global VALID_WORD_LIST
     guess_word = guess_word.upper()
     if len(guess_word) != WORDLE_SIZE:
         print("Wrong word size. The guessed word should be of length", WORDLE_SIZE)
         return 0
-    if guess_word not in WORD_LIST:
+    if guess_word not in VALID_WORD_LIST:
         print("Guessed word is not in the English dictionary. Try another.")
         return 0
     else:
@@ -150,7 +168,7 @@ def show_welcome_msg():
     print("----------------------------------")
     print("Maximum 6 guesses are allowed")
     print("Green indicates: Letter is present in the word AND it is in the right place.")
-    print("Blue indicates: Letter is present in the word but not in right place.")
+    print("Yellow indicates: Letter is present in the word but not in right place.")
     print("White indicates: Letter is not present")
     print("Orange indicates: Letter is not searched yet")
     print("=====================================================/n")
