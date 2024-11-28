@@ -92,7 +92,7 @@ def list_of_words_init():
     global VALID_WORD_LIST
     global alphabets
     # Open the text file containing English words
-    f = open("words_alpha.txt", "r")
+    f = open("valid_words.txt", "r")
     for word in f.readlines():
         # Select only words of the desired length
         if len(word) == 6:
